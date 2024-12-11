@@ -1,127 +1,100 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import { User, AuthState } from '../types/User';
+import React, { createContext, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LoginCredentials, RegisterData, AuthState } from '../types/Auth';
 
-interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: Partial<User>) => Promise<void>;
+interface AuthContextType {
+  authState: AuthState;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => void;
-  updateProfile: (userData: Partial<User>) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-type AuthAction =
-  | { type: 'AUTH_START' }
-  | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string } }
-  | { type: 'AUTH_FAILURE'; payload: string }
-  | { type: 'LOGOUT' }
-  | { type: 'UPDATE_PROFILE'; payload: User };
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const navigate = useNavigate();
+  const [authState, setAuthState] = useState<AuthState>({
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
+  });
 
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
-};
-
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  switch (action.type) {
-    case 'AUTH_START':
-      return { ...state, isLoading: true, error: null };
-    case 'AUTH_SUCCESS':
-      return {
-        ...state,
-        user: action.payload.user,
-        token: action.payload.token,
+  const login = async (credentials: LoginCredentials) => {
+    try {
+      setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+      // Simulate API call
+      console.log('Login attempt with:', credentials);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock successful login
+      setAuthState({
         isAuthenticated: true,
         isLoading: false,
         error: null,
-      };
-    case 'AUTH_FAILURE':
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload,
+      });
+      navigate('/profile');
+    } catch (error) {
+      setAuthState({
         isAuthenticated: false,
-      };
-    case 'LOGOUT':
-      return initialState;
-    case 'UPDATE_PROFILE':
-      return { ...state, user: action.payload };
-    default:
-      return state;
-  }
-};
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
-
-  const login = useCallback(async (email: string, password: string) => {
-    dispatch({ type: 'AUTH_START' });
-    try {
-      // TODO: Implement actual API call
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        isLoading: false,
+        error: 'Invalid credentials',
       });
-
-      if (!response.ok) throw new Error('Login failed');
-
-      const { token, user } = await response.json();
-      dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
-    } catch (error) {
-      dispatch({ type: 'AUTH_FAILURE', payload: 'Invalid credentials' });
     }
-  }, []);
+  };
 
-  const register = useCallback(async (userData: Partial<User>) => {
-    dispatch({ type: 'AUTH_START' });
+  const register = async (data: RegisterData) => {
     try {
-      // TODO: Implement actual API call
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
+      setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+      // Simulate API call
+      console.log('Registration attempt with:', data);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock successful registration
+      setAuthState({
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
       });
-
-      if (!response.ok) throw new Error('Registration failed');
-
-      const { token, user } = await response.json();
-      dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
+      navigate('/profile');
     } catch (error) {
-      dispatch({ type: 'AUTH_FAILURE', payload: 'Registration failed' });
+      setAuthState({
+        isAuthenticated: false,
+        isLoading: false,
+        error: 'Registration failed',
+      });
     }
-  }, []);
+  };
 
-  const logout = useCallback(() => {
-    dispatch({ type: 'LOGOUT' });
-  }, []);
+  const logout = () => {
+    setAuthState({
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
+    });
+    navigate('/login');
+  };
 
-  const updateProfile = useCallback(async (userData: Partial<User>) => {
+  const resetPassword = async (email: string) => {
     try {
-      // TODO: Implement actual API call
-      const response = await fetch('/api/user/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${state.token}`,
-        },
-        body: JSON.stringify(userData),
-      });
-
-      if (!response.ok) throw new Error('Profile update failed');
-
-      const updatedUser = await response.json();
-      dispatch({ type: 'UPDATE_PROFILE', payload: updatedUser });
+      setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+      // Simulate API call
+      console.log('Password reset attempt for:', email);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setAuthState(prev => ({ ...prev, isLoading: false }));
+      navigate('/login');
     } catch (error) {
-      dispatch({ type: 'AUTH_FAILURE', payload: 'Profile update failed' });
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Password reset failed',
+      }));
     }
-  }, [state.token]);
+  };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ authState, login, register, logout, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

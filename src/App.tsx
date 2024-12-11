@@ -1,41 +1,44 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import { ProfileProvider } from './context/ProfileContext';
 import { AuthProvider } from './context/AuthContext';
 import { Header } from './components/Header';
 import { Home } from './pages/Home';
 import { Cart } from './pages/Cart';
-import { Login } from './pages/auth/Login';
-import { Register } from './pages/auth/Register';
-import { DashboardLayout } from './components/dashboard/DashboardLayout';
-import { ProtectedRoute } from './components/common/ProtectedRoute';
+import { Product } from './pages/Product';
+import { Collections } from './pages/Collections';
+import { CollectionDetail } from './pages/CollectionDetail';
+import { Profile } from './pages/Profile';
+import { LoginPage } from './pages/Auth/LoginPage';
+import { RegisterPage } from './pages/Auth/RegisterPage';
+import { ForgotPasswordPage } from './pages/Auth/ForgotPasswordPage';
 
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            <Header />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
-              {/* Protected Dashboard Routes */}
-              <Route
-                path="/dashboard/*"
-                element={
-                  <ProtectedRoute>
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </div>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <ProfileProvider>
+          <CartProvider>
+            <div className="min-h-screen bg-gray-50">
+              <Header />
+              <main>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/product/:id" element={<Product />} />
+                  <Route path="/collections" element={<Collections />} />
+                  <Route path="/collections/:id" element={<CollectionDetail />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                </Routes>
+              </main>
+            </div>
+          </CartProvider>
+        </ProfileProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

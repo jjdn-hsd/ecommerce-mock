@@ -3,7 +3,6 @@ import { SearchInput } from './SearchInput';
 import { CategoryFilter } from './CategoryFilter';
 import { SearchResults } from './SearchResults';
 import { useProducts } from '../../hooks/useProducts';
-import { getUniqueCategories } from '../../utils/productUtils';
 
 export const SearchContainer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');

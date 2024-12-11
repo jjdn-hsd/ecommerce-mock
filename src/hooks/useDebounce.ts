@@ -4,7 +4,7 @@ export const useDebounce = <T extends (...args: any[]) => void>(
   callback: T,
   delay: number
 ): T => {
-  let timeoutId: NodeJS.Timeout;
+  let timeoutId: ReturnType<typeof setTimeout>;
 
   return useCallback(
     (...args: Parameters<T>) => {

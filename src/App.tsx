@@ -9,9 +9,6 @@ import { Product } from './pages/Product';
 import { Collections } from './pages/Collections';
 import { CollectionDetail } from './pages/CollectionDetail';
 import { Profile } from './pages/Profile';
-import { LoginPage } from './pages/Auth/LoginPage';
-import { RegisterPage } from './pages/Auth/RegisterPage';
-import { ForgotPasswordPage } from './pages/Auth/ForgotPasswordPage';
 
 function App() {
   return (
@@ -29,9 +26,6 @@ function App() {
                   <Route path="/collections" element={<Collections />} />
                   <Route path="/collections/:id" element={<CollectionDetail />} />
                   <Route path="/profile" element={<Profile />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 </Routes>
               </main>
             </div>

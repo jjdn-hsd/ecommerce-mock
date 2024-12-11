@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { CartIcon } from './CartIcon';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/formatCurrency';
 
 export const Header: React.FC = () => {
   const { cart } = useCart();
+  const { isAuthenticated, logout } = useAuth();
 
   return (
     <header className="bg-white shadow-md">
@@ -18,6 +20,25 @@ export const Header: React.FC = () => {
             <Link to="/products" className="text-gray-600 hover:text-gray-800">
               Products
             </Link>
+            
+            {isAuthenticated ? (
+              <>
+                <Link to="/dashboard" className="text-gray-600 hover:text-gray-800">
+                  Dashboard
+                </Link>
+                <button
+                  onClick={logout}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link to="/login" className="text-gray-600 hover:text-gray-800">
+                Login
+              </Link>
+            )}
+
             <Link to="/cart" className="text-gray-600 hover:text-gray-800 flex items-center">
               <CartIcon />
               {cart.total > 0 && (
